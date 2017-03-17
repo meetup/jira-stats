@@ -14,6 +14,7 @@ object ReleasedIssues {
         issueType <- issue.issueType
         createdJira <- issue.created
         created <- JiraTimeParser.parseDate(createdJira)
+        priority <- issue.priority
       } yield {
         val items = for {
           changeLog <- issue.changeLog.toList
@@ -36,10 +37,14 @@ object ReleasedIssues {
           issue.key,
           fixVersion,
           issueType.name,
+          priority.name,
           transitions,
           created
         )
-      }).toList
+      }).orElse {
+        println(s"Failed to convert issue: $issue")
+        None
+      }.toList
     }
 
     new ReleasedIssues(issues)
@@ -52,6 +57,7 @@ case class ReleasedIssue(
   key: String,
   version: String,
   issueType: String,
+  priority: String,
   transitions: List[Transition],
   created: Date
 )

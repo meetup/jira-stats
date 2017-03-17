@@ -21,7 +21,7 @@ object MysqlPrinter extends Printer {
       issue <- releasedIssues.issues
       created <- DateFormat.mysql(issue.created)
     } {
-      println(s"REPLACE INTO issue (`key`, `type`, `version`, `created`) VALUES ('${issue.key}', '${issue.issueType}', '${issue.version}', '$created');")
+      println(s"REPLACE INTO issue (`key`, `type`, `priority`, `version`, `created`) VALUES ('${issue.key}', '${issue.issueType}', '${issue.priority}', '${issue.version}', '$created');")
       println
 
       printTransitions(issue.key, issue.transitions)

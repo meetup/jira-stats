@@ -2,7 +2,7 @@ enablePlugins(CommonSettingsPlugin)
 enablePlugins(DockerPackagePlugin)
 enablePlugins(CoverallsWrapperPro)
 
-name := "blt-best-sbt-docker"
+name := "jira-stats"
 
 scalaVersion := "2.11.8"
 
