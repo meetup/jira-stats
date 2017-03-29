@@ -1,4 +1,4 @@
-package com.meetup.jirastats
+package com.meetup.jirastats.model
 
 import java.util.Date
 

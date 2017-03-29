@@ -7,8 +7,7 @@ import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
 trait JiraHandler {
-  def releasedClassicIssues(startAt: Option[Int] = None): Future[Issues]
-  def classicStories(startAt: Option[Int] = None): Future[Issues]
+  def issues(startAt: Option[Int] = None): Future[Issues]
   def close(): Unit
 }
 
@@ -26,23 +25,14 @@ object JiraHandler {
 }
 
 class JiraHandlerImpl(client: JiraClient) extends JiraHandler {
-  def releasedClassicIssues(startAt: Option[Int] = None): Future[Issues] = {
+  def issues(startAt: Option[Int] = None): Future[Issues] = {
     client.search(
       Search(
-        jql = "project = MUP AND status = Closed AND resolution = Done and fixVersion is not EMPTY",
+        //        jql = "status = Closed AND resolution = Done AND createdDate > startOfMonth(-6) ",
+        jql = "status = Closed AND resolution = Done AND createdDate > startOfWeek() ",
         startAt = startAt,
         expand = Some(List("changelog"))
       ))
-  }
-
-  def classicStories(startAt: Option[Int] = None): Future[Issues] = {
-    client.search(
-      Search(
-        jql = "project = MUP AND status = Closed AND resolution = Done AND issuetype = Story ORDER BY resolved DESC",
-        startAt = startAt,
-        expand = Some(List("changelog"))
-      )
-    )
   }
 
   def close(): Unit = {

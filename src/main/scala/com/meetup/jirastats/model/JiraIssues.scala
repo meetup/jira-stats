@@ -1,17 +1,19 @@
-package com.meetup.jirastats
+package com.meetup.jirastats.model
 
 import java.util.Date
 
 import com.meetup.jira.client.Issues
 import com.meetup.jirastats.util.JiraTimeParser
 
-object Stories {
-  def fromIssues(issuesResult: Issues): Stories = {
+object JiraIssues {
+  def fromIssues(issuesResult: Issues): JiraIssues = {
 
-    val stories: List[Story] = issuesResult.issues.flatMap { issue =>
+    val issues: List[JiraIssue] = issuesResult.issues.flatMap { issue =>
       (for {
+        issueType <- issue.issueType
         createdJira <- issue.created
         created <- JiraTimeParser.parseDate(createdJira)
+        priority <- issue.priority
       } yield {
         val items = for {
           changeLog <- issue.changeLog.toList
@@ -30,22 +32,34 @@ object Stories {
             }).toList
         }
 
-        Story(
+        JiraIssue(
           issue.key,
+          issue.fixVersions.headOption,
+          issueType.name,
+          priority.name,
+          issue.epic,
           transitions,
           created
         )
-      }).toList
+      }).orElse {
+        println(s"Failed to convert issue: $issue")
+        None
+      }.toList
     }
 
-    new Stories(stories)
+    new JiraIssues(issues)
   }
 }
 
-case class Stories(issues: List[Story])
+case class JiraIssues(issues: List[JiraIssue])
 
-case class Story(
+case class JiraIssue(
   key: String,
+  version: Option[String],
+  issueType: String,
+  priority: String,
+  epic: Option[String],
   transitions: List[Transition],
   created: Date
 )
+

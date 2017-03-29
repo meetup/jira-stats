@@ -1,8 +1,7 @@
 package com.meetup.jirastats.printer
 
-import com.meetup.jirastats.{ReleasedIssues, Stories}
+import com.meetup.jirastats.model.JiraIssues
 
 trait Printer {
-  def print(jiraStats: ReleasedIssues)
-  def print(stories: Stories): Unit
+  def print(jiraStats: JiraIssues, io: IO): Unit
 }
