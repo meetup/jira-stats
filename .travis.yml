@@ -1,0 +1,48 @@
+sudo: required
+language: bash
+
+# exclude tags.
+branches:
+  except:
+    - /^v\d+.\d+.\d+$/
+
+services:
+  - docker
+
+cache:
+  directories:
+  # these directories are typically caches for our common build tools
+  # travis will keep persistent cache across builds to reduce
+  # the amount of redundant work these build tools to do
+  - "$HOME/.ivy2"
+  - "$HOME/.sbt"
+
+env:
+  global:
+    # build number used by blt pipeline
+    - CI_BUILD_NUMBER=$TRAVIS_BUILD_NUMBER
+    - CLOUDSDK_CORE_DISABLE_PROMPTS=1
+
+before_install:
+  # Login to mup.cr to publish artifacts
+  - docker login --username $DOCKER_USER --password $DOCKER_PASS mup.cr
+
+script:
+  - >
+    if [ "$TRAVIS_PULL_REQUEST" == "false" ] && [ "$TRAVIS_BRANCH" == "master" ]; then
+      make publish;
+    else
+      make package;
+    fi
+
+after_success:
+  - git config --global user.email "builds@travis-ci.com"
+  - git config --global user.name "Travis CI"
+  - export GIT_TAG=v$(make version)
+  - echo "GIT_TAG=$GIT_TAG"
+  - >
+    [ "${TRAVIS_PULL_REQUEST}" = "false" ] && [ "${TRAVIS_BRANCH}" = "master" ] &&
+    git tag $GIT_TAG -f -a -m "Version $GIT_TAG built by Travis CI - https://travis-ci.com/$TRAVIS_REPO_SLUG/jobs/$TRAVIS_JOB_ID"
+  - >
+    [ "${TRAVIS_PULL_REQUEST}" = "false" ] && [ "${TRAVIS_BRANCH}" = "master" ] &&
+    git push --tags

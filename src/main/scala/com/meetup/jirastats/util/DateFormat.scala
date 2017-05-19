@@ -7,7 +7,7 @@ import scala.util.{Success, Try}
 
 object DateFormat {
   private val MysqlFormat = "yyyy-MM-dd HH:mm:ss"
-  private val BigQueryFormat = "yyyy-MM-dd HH:mm:ss.SSS Z"
+  private val BigQueryFormat = "yyyy-MM-dd HH:mm:ss.SSS"
 
   def mysql(date: Date): Option[String] = {
     val formatter = new SimpleDateFormat(MysqlFormat)

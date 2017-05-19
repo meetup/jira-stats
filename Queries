@@ -1,0 +1,94 @@
+SELECT
+issues.key, issues.priority, issues.version,
+FORMAT_TIMESTAMP("%Y-%m-%d %H:%M:%S", issues.created),
+FORMAT_TIMESTAMP("%Y-%m-%d %H:%M:%S", MIN(transitions.time)),
+FORMAT_TIMESTAMP("%Y-%m-%d %H:%M:%S", MIN(launches.launch_started)),
+FORMAT_TIMESTAMP("%Y-%m-%d %H:%M:%S", MIN(launches.launch_completed))
+FROM `meetup-prod.jira_stats.issues` AS issues
+LEFT JOIN `meetup-prod.jira_stats.launch_log` AS launches ON issues.version = CONCAT('release', CAST(launches.rel AS String))
+LEFT JOIN `meetup-prod.jira_stats.transitions` AS transitions ON issues.key = transitions.key AND transitions.`to` = 'Closed'
+WHERE type = 'Defect' AND priority IN ('Critical', 'Major')
+GROUP BY 1, 2, 3, 4
+LIMIT 1000
+
+
+
+////////////////
+WITH
+
+splitted AS (
+  SELECT
+    *
+  FROM
+    UNNEST( SPLIT(RPAD('',
+          1 + DATE_DIFF(CURRENT_DATE(), DATE("2016-06-01"), DAY),
+          '.'),''))),
+  with_row_numbers AS (
+  SELECT
+    ROW_NUMBER() OVER() AS pos,
+    *
+  FROM
+    splitted),
+  calendar_day AS (
+  SELECT
+    DATE_ADD(DATE("2016-06-01"), INTERVAL (pos - 1) DAY) AS day
+  FROM
+    with_row_numbers)
+
+
+
+SELECT
+day,
+IFNULL(c, 0)
+FROM calendar_day
+LEFT JOIN (
+  SELECT
+  launch_date,
+  count(*) AS c
+  FROM (
+    SELECT
+    rel,
+    launch_date,
+    FORMAT_TIMESTAMP("%Y-%m-%d %H:%M:%S", MIN(launches.launch_started))
+    FROM `meetup-prod.jira_stats.launch_log` AS launches
+    WHERE launch_date > DATE("2016-06-01")
+    GROUP BY 1,2
+  ) GROUP BY 1
+) AS l ON launch_date = day
+
+
+////////////////
+
+WITH
+splitted AS (
+  SELECT
+    *
+  FROM
+    UNNEST( SPLIT(RPAD('',
+          1 + DATE_DIFF(CURRENT_DATE(), DATE("2016-11-01"), DAY),
+          '.'),''))),
+  with_row_numbers AS (
+  SELECT
+    ROW_NUMBER() OVER() AS pos,
+    *
+  FROM
+    splitted),
+  calendar_day AS (
+  SELECT
+    DATE_ADD(DATE("2016-11-01"), INTERVAL (pos - 1) DAY) AS day
+  FROM
+    with_row_numbers)
+
+
+SELECT
+ day,
+ IFNULL(merged_count, 0) as merged
+ FROM calendar_day
+ LEFT JOIN (
+  SELECT
+    CAST(merged_time AS DATE) as merge_date,
+    count(*) merged_count
+  FROM `meetup-prod.pr_stats.pulls`
+  WHERE repo = 'meetup/meetup'
+  GROUP BY 1
+ ) ON merge_date = day

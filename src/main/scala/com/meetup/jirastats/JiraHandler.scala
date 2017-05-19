@@ -8,6 +8,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 trait JiraHandler {
   def issues(startAt: Option[Int] = None): Future[Issues]
+  def epics(startAt: Option[Int] = None): Future[Issues]
   def close(): Unit
 }
 
@@ -28,10 +29,17 @@ class JiraHandlerImpl(client: JiraClient) extends JiraHandler {
   def issues(startAt: Option[Int] = None): Future[Issues] = {
     client.search(
       Search(
-        //        jql = "status = Closed AND resolution = Done AND createdDate > startOfMonth(-6) ",
-        jql = "status = Closed AND resolution = Done AND createdDate > startOfWeek() ",
+        jql = "status = Closed AND resolution = Done AND createdDate > startOfYear()",
         startAt = startAt,
         expand = Some(List("changelog"))
+      ))
+  }
+
+  def epics(startAt: Option[Int] = None): Future[Issues] = {
+    client.search(
+      Search(
+        jql = "type = Epic",
+        startAt = startAt
       ))
   }
 
