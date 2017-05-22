@@ -24,8 +24,8 @@ env:
     - CLOUDSDK_CORE_DISABLE_PROMPTS=1
 
 before_install:
-  # Login to mup.cr to publish artifacts
   - docker login --username $DOCKER_USER --password $DOCKER_PASS mup.cr
+  - envtpl < .nexuscredential > "$HOME/.ivy2/.credentials"
 
 script:
   - >
