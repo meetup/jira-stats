@@ -29,11 +29,15 @@ object Epic {
     }
   }
 
-  private val PrefixPattern = "(^[a-zA-Z0-9]+)\\s?-\\s?.*".r
+  private val PrefixPattern = "^([ a-zA-Z0-9]+)\\s*[-:|]{1}\\s*.*".r
+  private val PrefixOnlyPattern = "^([a-zA-Z0-9]*)".r
+
   def epicPrefix(epicName: String): Option[String] = {
     (epicName.trim match {
       case PrefixPattern(prefix) =>
-        Some(prefix)
+        Some(prefix.trim)
+      case PrefixOnlyPattern(prefix) =>
+        Some(prefix.trim)
       case _ => None
     }).orElse {
       println(s"Failed to parse prefix from epic name: $epicName")
