@@ -24,6 +24,7 @@ env:
     - CLOUDSDK_CORE_DISABLE_PROMPTS=1
 
 before_install:
+  - pip install envtpl
   - docker login --username $DOCKER_USER --password $DOCKER_PASS mup.cr
   - envtpl < .nexuscredential > "$HOME/.ivy2/.credentials"
 
