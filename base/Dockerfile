@@ -7,3 +7,5 @@ RUN wget https://dl.google.com/dl/cloudsdk/channels/rapid/google-cloud-sdk.tar.g
     --usage-reporting false \
     --path-update true \
     --command-completion true
+
+ADD opt /opt
