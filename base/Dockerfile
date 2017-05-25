@@ -8,4 +8,6 @@ RUN wget https://dl.google.com/dl/cloudsdk/channels/rapid/google-cloud-sdk.tar.g
     --path-update true \
     --command-completion true
 
+ENV PATH="/google-cloud-sdk/bin:${PATH}"
+
 ADD opt /opt

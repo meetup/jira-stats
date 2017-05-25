@@ -4,6 +4,12 @@ enablePlugins(CoverallsWrapperPro)
 
 name := "jira-stats"
 
+daemonUser in Docker := "root"
+
+defaultLinuxInstallLocation in Docker := "/opt"
+
+dockerEntrypoint := Seq("/opt/entrypoint.sh")
+
 scalaVersion := "2.11.8"
 
 libraryDependencies ++= Seq(

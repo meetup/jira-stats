@@ -2,7 +2,7 @@
 
 # Pull down the latest yearly data from jira on issues
 # and pull down all the epic details.
-/opt/docker/bin/jira-stats
+/opt/bin/jira-stats
 
 # Upload to BigQuery
 bq load \
