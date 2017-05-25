@@ -10,8 +10,8 @@ VERSION ?= 0.2.$(CI_BUILD_NUMBER)
 
 BUILDER_TAG = "meetup/sbt-builder:0.1.5"
 
-BASE_TAG ?= "mup.cr/blt/jira-stats-base:$(VERSION)"
-PUBLISH_TAG ?= "mup.cr/blt/jira-stats:$(VERSION)"
+BASE_TAG ?= "mup.cr/jira-stats/base:$(VERSION)"
+PUBLISH_TAG ?= "mup.cr/jira-stats/app:$(VERSION)"
 
 help: ## print out all available commands
 	@echo Public targets:
@@ -44,6 +44,13 @@ publish: package
 
 base-tag: ## Used by sbt to get base image for docker.
 	@echo $(BASE_TAG)
+
+deploy-secret: ## With assumed variables, deploys secret def
+	@kubectl apply -f infra/jira-stats-ns.yaml
+	@JIRA_USER_BASE64=$(JIRA_USER_BASE64) \
+		JIRA_PASSWORD_BASE64=$(JIRA_PASSWORD_BASE64) \
+		JIRA_URI_BASE64=$(JIRA_URI_BASE64) \
+		envtpl < infra/jira-stats-secret.yaml | kubectl create -f -
 
 run-local: ## Run the docker image from local.
 	docker run \
