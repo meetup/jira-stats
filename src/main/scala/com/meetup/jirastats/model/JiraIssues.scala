@@ -42,7 +42,7 @@ object JiraIssues {
           created
         )
       }).orElse {
-        println(s"Failed to convert issue: $issue")
+        println(s"Failed to convert issue: ${issue.key} - ${issue.summary}")
         None
       }.toList
     }
