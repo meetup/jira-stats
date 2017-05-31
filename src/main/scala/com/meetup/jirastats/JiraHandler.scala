@@ -1,6 +1,6 @@
 package com.meetup.jirastats
 
-import com.meetup.jira.client.{Issues, JiraClient, Search}
+import com.meetup.jira.client.{Issues, JiraClient, Search, Version => JiraVersion}
 
 import dispatch.Http
 import scala.concurrent.Future
@@ -9,6 +9,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 trait JiraHandler {
   def issues(startAt: Option[Int] = None): Future[Issues]
   def epics(startAt: Option[Int] = None): Future[Issues]
+  def versions(): Future[Map[String, List[JiraVersion]]]
   def close(): Unit
 }
 
@@ -41,6 +42,19 @@ class JiraHandlerImpl(client: JiraClient) extends JiraHandler {
         jql = "type = Epic",
         startAt = startAt
       ))
+  }
+
+  def versions(): Future[Map[String, List[JiraVersion]]] = {
+    Future.sequence(
+      for {
+        project <- List("MUP", "AND", "IOS")
+      } yield {
+        client.versions(project)
+          .map { versions =>
+            (project -> versions)
+          }
+      }
+    ).map(_.toMap)
   }
 
   def close(): Unit = {

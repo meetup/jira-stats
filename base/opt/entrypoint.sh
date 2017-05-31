@@ -26,6 +26,13 @@ bq load \
   meetup_looker.epics \
   epics.json.log
 
+bq load \
+  --schema project:STRING,name:STRING,release_date:DATE \
+  --source_format NEWLINE_DELIMITED_JSON \
+  --replace \
+  meetup_looker.versions \
+  versions.json.log
+
 cat issue_progress_range.sql | bq query \
   --destination_table scratch.issue_progress_range \
   --replace \
