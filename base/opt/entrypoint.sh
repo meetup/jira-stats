@@ -47,4 +47,11 @@ cat progress_count.sql | bq query \
   -n 0 \
   --nouse_legacy_sql
 
+cat issue_closed_times.sql | bq query \
+  --destination_table meetup_looker.issue_closed_times \
+  --replace \
+  --batch \
+  -n 0 \
+  --nouse_legacy_sql
+
 # Create aggregated table from new data.
