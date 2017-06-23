@@ -20,7 +20,7 @@ splitted AS (
 
 SELECT key, epic, day
 FROM calendar_day
-JOIN `meetup-prod.scratch.issue_progress_range` AS i
+JOIN `meetup-prod.team_eng_jira.issue_progress_range` AS i
   ON CAST(i.in_progress AS DATE) <= day
   AND CAST(i.out_progress AS DATE) >= day
 ORDER BY 3

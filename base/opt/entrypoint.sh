@@ -9,46 +9,53 @@ bq load \
   --schema key:STRING,type:STRING,priority:STRING,version:STRING,epic:STRING,created:TIMESTAMP \
   --source_format NEWLINE_DELIMITED_JSON \
   --replace \
-  meetup_looker.issues \
+  team_eng_jira.issues \
   issues.json.log
 
 bq load \
   --schema key:STRING,from:STRING,to:STRING,time:TIMESTAMP \
   --source_format NEWLINE_DELIMITED_JSON \
   --replace \
-  meetup_looker.transitions \
+  team_eng_jira.transitions \
   transitions.json.log
 
 bq load \
   --schema key:STRING,name:STRING,prefix:STRING \
   --source_format NEWLINE_DELIMITED_JSON \
   --replace \
-  meetup_looker.epics \
+  team_eng_jira.epics \
   epics.json.log
 
 bq load \
   --schema project:STRING,name:STRING,release_date:DATE \
   --source_format NEWLINE_DELIMITED_JSON \
   --replace \
-  meetup_looker.versions \
+  team_eng_jira.versions \
   versions.json.log
 
+cat issue_closed_times.sql | bq query \
+  --destination_table team_eng_jira.issue_closed_times \
+  --replace \
+  --batch \
+  -n 0 \
+  --nouse_legacy_sql
+
 cat issue_progress_range.sql | bq query \
-  --destination_table scratch.issue_progress_range \
+  --destination_table team_eng_jira.issue_progress_range \
   --replace \
   --batch \
   -n 0 \
   --nouse_legacy_sql
 
 cat progress_count.sql | bq query \
-  --destination_table meetup_looker.issues_in_progress \
+  --destination_table team_eng_jira.issues_in_progress \
   --replace \
   --batch \
   -n 0 \
   --nouse_legacy_sql
 
-cat issue_closed_times.sql | bq query \
-  --destination_table meetup_looker.issue_closed_times \
+cat issue_cycle_time.sql | bq query \
+  --destination_table team_eng_jira.issue_cycle_time \
   --replace \
   --batch \
   -n 0 \
