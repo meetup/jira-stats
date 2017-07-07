@@ -10,4 +10,7 @@ RUN wget https://dl.google.com/dl/cloudsdk/channels/rapid/google-cloud-sdk.tar.g
 
 ENV PATH="/google-cloud-sdk/bin:${PATH}"
 
+ARG CI_BUILD_NUMBER
+ENV CI_BUILD_NUMBER=${CI_BUILD_NUMBER}
+
 ADD opt /opt

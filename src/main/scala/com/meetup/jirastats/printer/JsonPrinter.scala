@@ -12,6 +12,7 @@ object JsonPrinter extends Printer {
     } {
       val json =
         ("key" -> issue.key) ~
+          ("project" -> issue.project) ~
           ("type" -> issue.issueType) ~
           ("priority" -> issue.priority) ~
           ("version" -> issue.version.orNull) ~

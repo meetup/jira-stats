@@ -12,6 +12,7 @@ BUILDER_TAG = "meetup/sbt-builder:0.1.5"
 
 BASE_TAG ?= "mup.cr/jira-stats/base:$(VERSION)"
 PUBLISH_TAG ?= "mup.cr/jira-stats/app:$(VERSION)"
+LATEST_TAG ?= "mup.cr/jira-stats/app:latest"
 
 help: ## print out all available commands
 	@echo Public targets:
@@ -24,7 +25,7 @@ __package-sbt: ## Internal target used by sbt-builder
 	sbt 'docker:publishLocal'
 
 __package-base: ## Create base image used
-	docker build -t $(BASE_TAG) base
+	docker build --build-arg CI_BUILD_NUMBER=$(CI_BUILD_NUMBER) -t $(BASE_TAG) base
 
 package: __package-base ## Create container
 	# Run a docker container mounting the
@@ -40,7 +41,9 @@ package: __package-base ## Create container
 		make __package-sbt
 
 publish: package
-	docker push $(PUBLISH_TAG)
+	@docker tag $(PUBLISH_TAG) $(LATEST_TAG)
+	@docker push $(PUBLISH_TAG)
+	@docker push $(LATEST_TAG)
 
 base-tag: ## Used by sbt to get base image for docker.
 	@echo $(BASE_TAG)

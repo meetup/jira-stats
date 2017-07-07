@@ -30,7 +30,7 @@ class JiraHandlerImpl(client: JiraClient) extends JiraHandler {
   def issues(startAt: Option[Int] = None): Future[Issues] = {
     client.search(
       Search(
-        jql = "status = Closed AND resolution = Done AND createdDate > startOfYear()",
+        jql = "status = Closed AND resolution = Done AND createdDate > '2016-01-01'",
         startAt = startAt,
         expand = Some(List("changelog"))
       ))

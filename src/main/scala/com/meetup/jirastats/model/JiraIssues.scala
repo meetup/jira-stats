@@ -34,6 +34,7 @@ object JiraIssues {
 
         JiraIssue(
           issue.key,
+          issue.project.getOrElse("???"),
           issue.fixVersions.headOption,
           issueType.name,
           priority.name,
@@ -55,6 +56,7 @@ case class JiraIssues(issues: List[JiraIssue])
 
 case class JiraIssue(
   key: String,
+  project: String,
   version: Option[String],
   issueType: String,
   priority: String,

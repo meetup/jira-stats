@@ -1,12 +1,16 @@
 #!/bin/bash -ex
 
+echo
+echo "Running build: $CI_BUILD_NUMBER"
+echo
+
 # Pull down the latest yearly data from jira on issues
 # and pull down all the epic details.
 /opt/bin/jira-stats
 
 # Upload to BigQuery
 bq load \
-  --schema key:STRING,type:STRING,priority:STRING,version:STRING,epic:STRING,created:TIMESTAMP \
+  --schema key:STRING,project:STRING,type:STRING,priority:STRING,version:STRING,epic:STRING,created:TIMESTAMP \
   --source_format NEWLINE_DELIMITED_JSON \
   --replace \
   team_eng_jira.issues \
