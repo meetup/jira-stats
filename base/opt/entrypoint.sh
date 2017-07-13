@@ -65,4 +65,11 @@ cat issue_cycle_time.sql | bq query \
   -n 0 \
   --nouse_legacy_sql
 
+cat issue_lead_time.sql | bq query \
+  --destination_table team_eng_jira.issue_lead_time \
+  --replace \
+  --batch \
+  -n 0 \
+  --nouse_legacy_sql
+
 # Create aggregated table from new data.
