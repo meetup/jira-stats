@@ -40,9 +40,11 @@ package: __package-base ## Create container
 		$(BUILDER_TAG) \
 		make __package-sbt
 
-publish: package
-	@docker tag $(PUBLISH_TAG) $(LATEST_TAG)
+__publish:
 	@docker push $(PUBLISH_TAG)
+
+publish: package __publish
+	@docker tag $(PUBLISH_TAG) $(LATEST_TAG)
 	@docker push $(LATEST_TAG)
 
 base-tag: ## Used by sbt to get base image for docker.
